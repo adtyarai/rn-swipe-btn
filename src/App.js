@@ -18,13 +18,14 @@ const COLORS = {
   SLIDE_BTN: '#dffc55',
   BTN_COLOR: '#253836',
   BG_COLOR: '#132223',
-  ARROW_COLOR: '#00000',
 };
 
 const BUTTON_HEIGHT = 50;
 const BUTTON_WIDTH = 350;
 const BORDER_RADIUS = 50;
 const SWIPE_BUTTON_WIDTH = 50;
+// Furthest the thumb can travel: track width minus thumb width
+const MAX_TRANSLATE = BUTTON_WIDTH - SWIPE_BUTTON_WIDTH;
 
 export default function App() {
   const X = useSharedValue(0);
@@ -41,22 +42,14 @@ export default function App() {
       context.completed = toggled;
     },
     onActive: (event, context) => {
-      let newValue;
-      if (context.completed) {
-        newValue = 290 + event.translationX;
-      } else {
-        newValue = event.translationX;
-      }
-
-      if (newValue >= 0 && newValue <= 300) {
-        X.value = newValue;
-      }
+      const start = context.completed ? MAX_TRANSLATE : 0;
+      // Clamp instead of ignoring out-of-range values, so fast swipes still reach the ends
+      X.value = Math.min(Math.max(start + event.translationX, 0), MAX_TRANSLATE);
     },
     onEnd: () => {
-      if (X.value < BUTTON_WIDTH / 2) {
-        X.value = withSpring(0);
-      } else X.value = withSpring(300);
-      runOnJS(handleComplete)(true);
+      const completed = X.value >= MAX_TRANSLATE / 2;
+      X.value = withSpring(completed ? MAX_TRANSLATE : 0);
+      runOnJS(handleComplete)(completed);
     },
   });
 
@@ -88,8 +81,6 @@ export default function App() {
   };
   return (
     <GestureHandlerRootView style={{flex: 1}}>
-      {console.log('Xvalue')}
-      {console.log(X.value)}
       <View style={styles.container}>
         <View
           style={{
@@ -120,7 +111,7 @@ export default function App() {
               style={[
                 {
                   height: BUTTON_HEIGHT,
-                  width: 50,
+                  width: SWIPE_BUTTON_WIDTH,
                   backgroundColor: COLORS.SLIDE_BTN,
                   position: 'absolute',
                   left: 0,
