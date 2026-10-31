@@ -1,17 +1,16 @@
-/**
- * @format
- */
-
-import 'react-native';
 import React from 'react';
+import {fireEvent, render, screen} from '@testing-library/react-native';
 import App from '../src/App';
 
-// Note: import explicitly to use the types shiped with jest.
-import {it} from '@jest/globals';
+describe('App', () => {
+  it('shows the unlocked state after the button is activated', () => {
+    render(<App />);
+    expect(screen.getByTestId('status')).toHaveTextContent('Locked');
 
-// Note: test renderer must be required after react-native.
-import renderer from 'react-test-renderer';
+    fireEvent(screen.getByTestId('unlock-button'), 'accessibilityAction', {
+      nativeEvent: {actionName: 'activate'},
+    });
 
-it('renders correctly', () => {
-  renderer.create(<App />);
+    expect(screen.getByTestId('status')).toHaveTextContent('Unlocked');
+  });
 });
