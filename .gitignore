@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+*.iml
+
+# Android
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+*.hprof
+
+# iOS
+ios/Pods/
+ios/build/
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+
+# Metro / Bundler
+.metro-health-check*
+vendor/bundle/
+*.jsbundle
+
+# Logs
+npm-debug.log
+yarn-error.log
